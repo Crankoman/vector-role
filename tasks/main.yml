@@ -2,8 +2,14 @@
 # tasks file for vector-role
 - name: Fix
   become: true
-  ansible.builtin.shell: 
-        cmd: sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Linux-* && sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-Linux-*
+#  ansible.builtin.shell:
+#        cmd: sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Linux-* && sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-Linux-*
+  copy:
+    src: CentOS-Base.repo
+    dest: /etc/yum.repos.d/CentOS-Base.repo
+    mode: 0644
+    owner: root
+    group: root
   when: ansible_distribution == 'CentOS'
 - name: Install Vector distrib CentOS
   become: true
@@ -25,7 +31,7 @@
     mode: "0644"
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_gid }}"
-- name: Vector systemd
+- name: Vector systemd Centos
   become: true
   ansible.builtin.template:
     src: vector.service.j2
@@ -34,4 +40,15 @@
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_gid }}"
     backup: true
+  when: ansible_distribution == 'CentOS'
+- name: Vector systemd Ubuntu
+  become: true
+  ansible.builtin.template:
+    src: vector.initd.j2
+    dest: /etc/init.d/vector
+    mode: "0777"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_gid }}"
+    backup: true
+  when: ansible_distribution == 'Ubuntu'
   notify: Restart Vector service

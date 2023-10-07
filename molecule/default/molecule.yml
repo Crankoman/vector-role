@@ -1,4 +1,3 @@
----
 dependency:
   name: galaxy
 driver:
@@ -8,11 +7,15 @@ platforms:
     image: docker.io/pycontribs/centos:8
     pre_build_image: true
     privileged: true
-  - name: ubuntu
-    image: docker.io/pycontribs/ubuntu:latest
-    pre_build_image: true
+#  - name: ubuntu
+#    image: docker.io/pycontribs/ubuntu:latest
+#    pre_build_image: true
 provisioner:
   name: ansible
 verifier:
   name: ansible
-  
+scenario:
+  name: default
+  test_sequence:
+    - destroy
+    - create
